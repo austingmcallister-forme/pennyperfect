@@ -14,11 +14,11 @@ export default function InstallPage() {
           </p>
           <div className="flex justify-center space-x-4">
             <Link
-              href="/api/auth/shopify/install?shop=your-shop.myshopify.com"
+              href="/dashboard"
               className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
             >
               <ShoppingBag className="h-6 w-6 mr-2" />
-              Install App
+              Test App (Skip OAuth)
             </Link>
             <Link
               href="/dashboard"
@@ -116,11 +116,11 @@ export default function InstallPage() {
             Join stores already using PennyPerfect to optimize their pricing strategy
           </p>
           <Link
-            href="/api/auth/shopify/install?shop=your-shop.myshopify.com"
+            href="/dashboard"
             className="inline-flex items-center px-8 py-4 border border-transparent text-lg font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors"
           >
             <ShoppingBag className="h-6 w-6 mr-2" />
-            Install PennyPerfect Now
+            Test PennyPerfect Now
           </Link>
         </div>
       </div>
