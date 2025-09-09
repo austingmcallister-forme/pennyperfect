@@ -1,0 +1,22 @@
+{
+  "/_not-found": "app/_not-found.js",
+  "/api/auth/shopify/callback/route": "app/api/auth/shopify/callback/route.js",
+  "/api/auth/shopify/install/route": "app/api/auth/shopify/install/route.js",
+  "/api/bands/[id]/route": "app/api/bands/[id]/route.js",
+  "/api/bands/route": "app/api/bands/route.js",
+  "/api/cron/switchback/route": "app/api/cron/switchback/route.js",
+  "/api/events/session-start/route": "app/api/events/session-start/route.js",
+  "/api/experiments/[id]/promote/route": "app/api/experiments/[id]/promote/route.js",
+  "/api/experiments/[id]/revert/route": "app/api/experiments/[id]/revert/route.js",
+  "/api/experiments/[id]/route": "app/api/experiments/[id]/route.js",
+  "/api/experiments/route": "app/api/experiments/route.js",
+  "/api/products/route": "app/api/products/route.js",
+  "/api/webhooks/orders/paid/route": "app/api/webhooks/orders/paid/route.js",
+  "/bands/new/page": "app/bands/new/page.js",
+  "/bands/page": "app/bands/page.js",
+  "/dashboard/page": "app/dashboard/page.js",
+  "/experiments/[id]/page": "app/experiments/[id]/page.js",
+  "/experiments/new/page": "app/experiments/new/page.js",
+  "/experiments/page": "app/experiments/page.js",
+  "/page": "app/page.js"
+}

@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Shop {
+  id             String   @id @default(cuid())
+  domain         String   @unique
+  accessTokenEnc String   // encrypted Shopify token
+  currency       String
+  createdAt      DateTime @default(now())
+  products       Product[]
+  variants       Variant[]
+  bands          PriceBand[]
+  experiments    Experiment[]
+  priceChanges   PriceChange[]
+}
+
+model Product {
+  id         String   @id @default(cuid())
+  shop       Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  shopId     String
+  shopifyId  BigInt
+  title      String?
+  handle     String?
+  createdAt  DateTime @default(now())
+  variants   Variant[]
+  @@unique([shopId, shopifyId])
+}
+
+model Variant {
+  id                String  @id @default(cuid())
+  shop              Shop    @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  shopId            String
+  product           Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId         String
+  shopifyVariantId  BigInt
+  shopifyProductId  BigInt
+  sku               String?
+  title             String?
+  priceCents        Int
+  compareAtCents    Int?
+  createdAt         DateTime @default(now())
+  priceChanges      PriceChange[]
+  @@unique([shopId, shopifyVariantId])
+}
+
+model PriceBand {
+  id               String   @id @default(cuid())
+  shop             Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  shopId           String
+  name             String
+  minCents         Int
+  maxCents         Int
+  allowedEndings   Int[]    // e.g. [99,95,90]
+  floorCents       Int?
+  excludeCollections String[]
+  excludeSkus      String[]
+  active           Boolean  @default(true)
+  experiments      Experiment[]
+}
+
+enum ExpStatus { 
+  running 
+  promoted 
+  reverted 
+  paused 
+}
+
+model Experiment {
+  id                 String   @id @default(cuid())
+  shop               Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  shopId             String
+  band               PriceBand @relation(fields: [bandId], references: [id], onDelete: Cascade)
+  bandId             String
+  cadenceHours       Int
+  revertThresholdRpv Float    // e.g., 0.01 = +1%
+  minSessions        Int      @default(500)
+  minCycles          Int      @default(3)
+  status             ExpStatus @default(running)
+  startedAt          DateTime  @default(now())
+  endedAt            DateTime?
+  periods            ExperimentPeriod[]
+  @@index([shopId, status])
+}
+
+model ExperimentPeriod {
+  id            String    @id @default(cuid())
+  experiment    Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+  experimentId  String
+  ending        Int       // 99,95,90
+  startedAt     DateTime
+  endedAt       DateTime?
+  sessions      Int       @default(0)
+  orders        Int       @default(0)
+  revenueCents  BigInt    @default(0)
+  @@index([experimentId, startedAt])
+}
+
+model PriceChange {
+  id            String   @id @default(cuid())
+  shop          Shop     @relation(fields: [shopId], references: [id], onDelete: Cascade)
+  shopId        String
+  variant       Variant  @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  variantId     String
+  experimentId  String?
+  oldPriceCents Int
+  newPriceCents Int
+  reason        String   // 'switchback'|'promote'|'revert'|'manual'
+  createdAt     DateTime @default(now())
+}
