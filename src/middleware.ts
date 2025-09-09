@@ -75,17 +75,21 @@ function handleApiRoute(request: NextRequest) {
 }
 
 function handleDashboardRoute(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const shop = searchParams.get('shop')
-  
-  // For dashboard routes, redirect to install if no shop parameter
-  if (!shop) {
-    const installUrl = new URL('/api/auth/shopify/install', request.url)
-    installUrl.searchParams.set('shop', 'your-shop.myshopify.com') // This should be dynamic
-    return NextResponse.redirect(installUrl)
-  }
-  
+  // Temporarily disable redirect for testing
+  // TODO: Re-enable after OAuth is working
   return NextResponse.next()
+  
+  // const { searchParams } = new URL(request.url)
+  // const shop = searchParams.get('shop')
+  
+  // // For dashboard routes, redirect to install if no shop parameter
+  // if (!shop) {
+  //   const installUrl = new URL('/api/auth/shopify/install', request.url)
+  //   installUrl.searchParams.set('shop', 'your-shop.myshopify.com') // This should be dynamic
+  //   return NextResponse.redirect(installUrl)
+  // }
+  
+  // return NextResponse.next()
 }
 
 export const config = {
