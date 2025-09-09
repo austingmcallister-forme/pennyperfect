@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { encrypt } from '@/lib/crypto'
-import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -50,19 +49,23 @@ export async function GET(request: NextRequest) {
     const shopData = await shopResponse.json()
     const currency = shopData.shop?.currency || 'USD'
     
-    // Store shop in database
-    await prisma.shop.upsert({
-      where: { domain: shop },
-      update: {
-        accessTokenEnc: encrypt(accessToken),
-        currency,
-      },
-      create: {
-        domain: shop,
-        accessTokenEnc: encrypt(accessToken),
-        currency,
-      },
-    })
+    // Store shop in database (only if DATABASE_URL is available)
+    if (process.env.DATABASE_URL) {
+      const { prisma } = await import('@/lib/prisma')
+      
+      await prisma.shop.upsert({
+        where: { domain: shop },
+        update: {
+          accessTokenEnc: encrypt(accessToken),
+          currency,
+        },
+        create: {
+          domain: shop,
+          accessTokenEnc: encrypt(accessToken),
+          currency,
+        },
+      })
+    }
     
     // Clear the nonce cookie
     const response = NextResponse.redirect(`${process.env.APP_URL}/dashboard`)
