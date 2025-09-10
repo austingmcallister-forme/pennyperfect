@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+
+// Temporary in-memory storage for testing
+let testBands: any[] = []
+let testShopId = 'test-shop-id'
 
 const createBandSchema = z.object({
   name: z.string().min(1),
@@ -13,67 +16,28 @@ const createBandSchema = z.object({
 })
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const shopDomain = searchParams.get('shop')
-  
-  if (!shopDomain) {
-    return NextResponse.json({ error: 'Shop parameter is required' }, { status: 400 })
-  }
-  
-  try {
-    const shop = await prisma.shop.findUnique({
-      where: { domain: shopDomain },
-      include: {
-        bands: {
-          include: {
-            experiments: {
-              where: { status: 'running' },
-            },
-          },
-        },
-      },
-    })
-    
-    if (!shop) {
-      return NextResponse.json({ error: 'Shop not found' }, { status: 404 })
-    }
-    
-    return NextResponse.json(shop.bands)
-    
-  } catch (error) {
-    console.error('Error fetching bands:', error)
-    return NextResponse.json({ error: 'Failed to fetch bands' }, { status: 500 })
-  }
+  // For testing, just return the in-memory bands
+  return NextResponse.json(testBands)
 }
 
 export async function POST(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const shopDomain = searchParams.get('shop')
-  
-  if (!shopDomain) {
-    return NextResponse.json({ error: 'Shop parameter is required' }, { status: 400 })
-  }
-  
   try {
-    const shop = await prisma.shop.findUnique({
-      where: { domain: shopDomain },
-    })
-    
-    if (!shop) {
-      return NextResponse.json({ error: 'Shop not found' }, { status: 404 })
-    }
-    
     const body = await request.json()
     const validatedData = createBandSchema.parse(body)
     
-    const band = await prisma.priceBand.create({
-      data: {
-        shopId: shop.id,
-        ...validatedData,
-      },
-    })
+    // Create a new band with a unique ID
+    const newBand = {
+      id: `band-${Date.now()}`,
+      shopId: testShopId,
+      ...validatedData,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
     
-    return NextResponse.json(band)
+    // Add to in-memory storage
+    testBands.push(newBand)
+    
+    return NextResponse.json(newBand)
     
   } catch (error) {
     if (error instanceof z.ZodError) {
