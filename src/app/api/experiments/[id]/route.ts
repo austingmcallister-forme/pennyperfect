@@ -1,72 +1,59 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// Temporary in-memory storage for testing
+let testExperiments: any[] = [
+  {
+    id: 'exp-test-1',
+    shopId: 'test-shop-id',
+    bandId: 'band-test-1',
+    status: 'running',
+    cadenceHours: 24,
+    revertThresholdRpv: 0.01,
+    minSessions: 500,
+    minCycles: 3,
+    startedAt: new Date().toISOString(),
+    periods: [
+      { ending: 99, sessions: 150, orders: 12, revenueCents: 2400 },
+      { ending: 95, sessions: 140, orders: 15, revenueCents: 2850 },
+      { ending: 90, sessions: 160, orders: 18, revenueCents: 3240 }
+    ],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+]
+
+export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
   try {
-    const experiment = await prisma.experiment.findUnique({
-      where: { id: params.id },
-      include: {
-        band: true,
-        periods: {
-          orderBy: { startedAt: 'desc' },
-        },
-      },
-    })
-    
-    if (!experiment) {
+    const { id } = params
+    const body = await request.json()
+    const { status } = body
+
+    console.log(`PUT /api/experiments/${id} called with status:`, status)
+
+    // Find the experiment
+    const experimentIndex = testExperiments.findIndex(exp => exp.id === id)
+    if (experimentIndex === -1) {
       return NextResponse.json({ error: 'Experiment not found' }, { status: 404 })
     }
-    
-    return NextResponse.json(experiment)
-    
-  } catch (error) {
-    console.error('Error fetching experiment:', error)
-    return NextResponse.json({ error: 'Failed to fetch experiment' }, { status: 500 })
-  }
-}
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const body = await request.json()
-    
-    const experiment = await prisma.experiment.update({
-      where: { id: params.id },
-      data: {
-        status: body.status,
-        endedAt: body.status === 'running' ? null : new Date(),
-      },
-      include: {
-        band: true,
-      },
-    })
-    
-    return NextResponse.json(experiment)
-    
+    // Update the experiment status
+    testExperiments[experimentIndex] = {
+      ...testExperiments[experimentIndex],
+      status,
+      updatedAt: new Date().toISOString()
+    }
+
+    console.log('Updated experiment:', testExperiments[experimentIndex])
+
+    return NextResponse.json(testExperiments[experimentIndex])
   } catch (error) {
     console.error('Error updating experiment:', error)
-    return NextResponse.json({ error: 'Failed to update experiment' }, { status: 500 })
-  }
-}
-
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    await prisma.experiment.delete({
-      where: { id: params.id },
-    })
-    
-    return NextResponse.json({ message: 'Experiment deleted successfully' })
-    
-  } catch (error) {
-    console.error('Error deleting experiment:', error)
-    return NextResponse.json({ error: 'Failed to delete experiment' }, { status: 500 })
+    return NextResponse.json(
+      { 
+        error: 'Failed to update experiment',
+        details: error instanceof Error ? error.message : String(error)
+      }, 
+      { status: 500 }
+    )
   }
 }

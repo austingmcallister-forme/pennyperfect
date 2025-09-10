@@ -85,6 +85,36 @@ export default function ExperimentsPage() {
     return band ? band.name : `Band ${bandId.slice(-8)}`
   }
 
+  const handlePauseResume = async (experimentId: string, currentStatus: string) => {
+    const newStatus = currentStatus === 'running' ? 'paused' : 'running'
+    
+    try {
+      const response = await fetch(`/api/experiments/${experimentId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      })
+
+      if (response.ok) {
+        // Update the local state
+        setExperiments(prev => 
+          prev.map(exp => 
+            exp.id === experimentId 
+              ? { ...exp, status: newStatus, updatedAt: new Date().toISOString() }
+              : exp
+          )
+        )
+        console.log(`Experiment ${experimentId} ${newStatus}`)
+      } else {
+        console.error('Failed to update experiment status')
+      }
+    } catch (error) {
+      console.error('Error updating experiment:', error)
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50 flex items-center justify-center">
@@ -186,11 +216,19 @@ export default function ExperimentsPage() {
                       </span>
                       <div className="flex space-x-2">
                         {experiment.status === 'running' ? (
-                          <button className="inline-flex items-center px-3 py-2 border border-yellow-300 text-yellow-700 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors">
+                          <button 
+                            onClick={() => handlePauseResume(experiment.id, experiment.status)}
+                            className="inline-flex items-center px-3 py-2 border border-yellow-300 text-yellow-700 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors"
+                            title="Pause experiment"
+                          >
                             <Pause className="h-4 w-4" />
                           </button>
                         ) : (
-                          <button className="inline-flex items-center px-3 py-2 border border-green-300 text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors">
+                          <button 
+                            onClick={() => handlePauseResume(experiment.id, experiment.status)}
+                            className="inline-flex items-center px-3 py-2 border border-green-300 text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+                            title="Resume experiment"
+                          >
                             <Play className="h-4 w-4" />
                           </button>
                         )}
