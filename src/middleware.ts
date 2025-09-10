@@ -61,6 +61,11 @@ function handleApiRoute(request: NextRequest) {
     return NextResponse.next()
   }
   
+  // Skip bands route in test mode (no shop parameter required)
+  if (request.nextUrl.pathname.startsWith('/api/bands')) {
+    return NextResponse.next()
+  }
+  
   // Require shop parameter for most API routes
   if (!shop) {
     return NextResponse.json({ error: 'Shop parameter is required' }, { status: 400 })
