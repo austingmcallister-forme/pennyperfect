@@ -225,23 +225,31 @@ export default function ExperimentsPage() {
                       <div className="flex space-x-2">
                         {experiment.status === 'running' ? (
                           <button 
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              alert('Pause button clicked!')
                               console.log('Pause button clicked for experiment:', experiment.id)
                               handlePauseResume(experiment.id, experiment.status)
                             }}
-                            className="inline-flex items-center px-3 py-2 border border-yellow-300 text-yellow-700 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors"
+                            className="inline-flex items-center px-3 py-2 border border-yellow-300 text-yellow-700 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors cursor-pointer"
                             title="Pause experiment"
+                            type="button"
                           >
                             <Pause className="h-4 w-4" />
                           </button>
                         ) : (
                           <button 
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.preventDefault()
+                              e.stopPropagation()
+                              alert('Resume button clicked!')
                               console.log('Resume button clicked for experiment:', experiment.id)
                               handlePauseResume(experiment.id, experiment.status)
                             }}
-                            className="inline-flex items-center px-3 py-2 border border-green-300 text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+                            className="inline-flex items-center px-3 py-2 border border-green-300 text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors cursor-pointer"
                             title="Resume experiment"
+                            type="button"
                           >
                             <Play className="h-4 w-4" />
                           </button>
