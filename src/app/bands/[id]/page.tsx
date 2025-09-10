@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-imenboarimport { ArrowLeft, Edit, Trash2, Play, Pause, BarChart3, Home, Zap, CheckCircle, AlertCircle } from 'lucide-react'
+import { ArrowLeft, Edit, Trash2, Play, Pause, BarChart3, Home, Zap, CheckCircle, AlertCircle } from 'lucide-react'
 
 interface PriceBand {
   id: string
