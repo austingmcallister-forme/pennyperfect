@@ -2,7 +2,26 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 // Temporary in-memory storage for testing
-let testExperiments: any[] = []
+let testExperiments: any[] = [
+  {
+    id: 'exp-test-1',
+    shopId: 'test-shop-id',
+    bandId: 'band-test-1',
+    status: 'running',
+    cadenceHours: 24,
+    revertThresholdRpv: 0.01,
+    minSessions: 500,
+    minCycles: 3,
+    startedAt: new Date().toISOString(),
+    periods: [
+      { ending: 99, sessions: 150, orders: 12, revenueCents: 2400 },
+      { ending: 95, sessions: 140, orders: 15, revenueCents: 2850 },
+      { ending: 90, sessions: 160, orders: 18, revenueCents: 3240 }
+    ],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+]
 let testShopId = 'test-shop-id'
 
 const createExperimentSchema = z.object({
