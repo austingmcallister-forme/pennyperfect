@@ -13,7 +13,7 @@ interface ExperimentPeriod {
 
 interface Experiment {
   id: string
-  bandName: string
+  bandId: string
   status: string
   cadenceHours: number
   revertThresholdRpv: number
@@ -26,43 +26,38 @@ interface Experiment {
 
 export default function ExperimentsPage() {
   const [experiments, setExperiments] = useState<Experiment[]>([])
+  const [bands, setBands] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // For now, use mock data. Later this will fetch from API
-    setExperiments([
-    {
-      id: '1',
-      bandName: 'Mid-Range Products',
-      status: 'running',
-      cadenceHours: 24,
-      revertThresholdRpv: 0.01,
-      minSessions: 500,
-      minCycles: 3,
-      startedAt: '2024-01-15T10:00:00Z',
-      periods: [
-        { ending: 99, sessions: 150, orders: 12, revenueCents: 2400 },
-        { ending: 95, sessions: 180, orders: 18, revenueCents: 3600 },
-        { ending: 90, sessions: 120, orders: 8, revenueCents: 1600 },
-      ],
-    },
-    {
-      id: '2',
-      bandName: 'Premium Products',
-      status: 'promoted',
-      cadenceHours: 48,
-      revertThresholdRpv: 0.02,
-      minSessions: 1000,
-      minCycles: 5,
-      startedAt: '2024-01-10T10:00:00Z',
-      endedAt: '2024-01-20T10:00:00Z',
-      periods: [
-        { ending: 99, sessions: 300, orders: 25, revenueCents: 7500 },
-        { ending: 95, sessions: 280, orders: 30, revenueCents: 9000 },
-      ],
-    },
-  ])
-    setLoading(false)
+    const fetchData = async () => {
+      try {
+        // Fetch both experiments and bands
+        const [experimentsResponse, bandsResponse] = await Promise.all([
+          fetch('/api/experiments'),
+          fetch('/api/bands')
+        ])
+        
+        if (experimentsResponse.ok && bandsResponse.ok) {
+          const experimentsData = await experimentsResponse.json()
+          const bandsData = await bandsResponse.json()
+          
+          console.log('Fetched experiments:', experimentsData)
+          console.log('Fetched bands:', bandsData)
+          
+          setExperiments(experimentsData)
+          setBands(bandsData)
+        } else {
+          console.error('Failed to fetch data')
+        }
+      } catch (err) {
+        console.error('Error loading data:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchData()
   }, [])
 
   const getStatusColor = (status: string) => {
@@ -83,6 +78,11 @@ export default function ExperimentsPage() {
   const calculateRPV = (revenueCents: number | bigint, sessions: number) => {
     const revenue = typeof revenueCents === 'bigint' ? Number(revenueCents) : revenueCents
     return sessions > 0 ? (revenue / sessions).toFixed(2) : '0.00'
+  }
+
+  const getBandName = (bandId: string) => {
+    const band = bands.find(b => b.id === bandId)
+    return band ? band.name : `Band ${bandId.slice(-8)}`
   }
 
   if (loading) {
@@ -161,7 +161,7 @@ export default function ExperimentsPage() {
                       </div>
                       <div className="ml-4">
                         <h3 className="text-xl font-semibold text-gray-900">
-                          {experiment.bandName}
+                          {getBandName(experiment.bandId)}
                         </h3>
                         <p className="text-sm text-gray-600">
                           Started {new Date(experiment.startedAt).toLocaleDateString()}
