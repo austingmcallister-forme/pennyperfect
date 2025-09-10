@@ -53,6 +53,10 @@ export default function BandDetailPage() {
     fetchBand()
   }, [params.id])
 
+  const handleEditBand = () => {
+    router.push(`/bands/${band.id}/edit`)
+  }
+
   const handleStartExperiment = async () => {
     if (!band) return
     
@@ -186,7 +190,10 @@ export default function BandDetailPage() {
               </p>
             </div>
             <div className="flex space-x-3">
-              <button className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+              <button 
+                onClick={handleEditBand}
+                className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+              >
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </button>
@@ -343,7 +350,10 @@ export default function BandDetailPage() {
                   <BarChart3 className="h-4 w-4 mr-2" />
                   View Analytics
                 </button>
-                <button className="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                <button 
+                  onClick={handleEditBand}
+                  className="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
                   <Edit className="h-4 w-4 mr-2" />
                   Edit Band
                 </button>

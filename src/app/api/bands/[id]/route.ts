@@ -1,86 +1,74 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-const updateBandSchema = z.object({
-  name: z.string().min(1).optional(),
-  minCents: z.number().min(0).optional(),
-  maxCents: z.number().min(0).optional(),
-  allowedEndings: z.array(z.number()).min(1).optional(),
-  floorCents: z.number().optional(),
-  excludeCollections: z.array(z.string()).optional(),
-  excludeSkus: z.array(z.string()).optional(),
-  active: z.boolean().optional(),
-})
+// Temporary in-memory storage for testing
+let testBands: any[] = []
+let testShopId = 'test-shop-id'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const band = await prisma.priceBand.findUnique({
-      where: { id: params.id },
-      include: {
-        experiments: {
-          include: {
-            periods: {
-              orderBy: { startedAt: 'desc' },
-            },
-          },
-        },
-      },
-    })
-    
-    if (!band) {
-      return NextResponse.json({ error: 'Band not found' }, { status: 404 })
-    }
-    
-    return NextResponse.json(band)
-    
-  } catch (error) {
-    console.error('Error fetching band:', error)
-    return NextResponse.json({ error: 'Failed to fetch band' }, { status: 500 })
-  }
-}
+const updateBandSchema = z.object({
+  name: z.string().min(1),
+  minCents: z.number().min(0),
+  maxCents: z.number().min(0),
+  allowedEndings: z.array(z.number()),
+  floorCents: z.number().optional(),
+  excludeCollections: z.array(z.string()).default([]),
+  excludeSkus: z.array(z.string()).default([]),
+})
 
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  let body: any
   try {
-    const body = await request.json()
+    body = await request.json()
+    console.log('Received update data:', JSON.stringify(body, null, 2))
+    
     const validatedData = updateBandSchema.parse(body)
+    const bandId = params.id
     
-    const band = await prisma.priceBand.update({
-      where: { id: params.id },
-      data: validatedData,
-    })
-    
-    return NextResponse.json(band)
-    
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid data', details: error.errors }, { status: 400 })
+    // Find the band to update
+    const bandIndex = testBands.findIndex(band => band.id === bandId)
+    if (bandIndex === -1) {
+      return NextResponse.json({ error: 'Band not found' }, { status: 404 })
     }
     
+    // Update the band
+    testBands[bandIndex] = {
+      ...testBands[bandIndex],
+      ...validatedData,
+      updatedAt: new Date().toISOString(),
+    }
+    
+    console.log('Updated band:', testBands[bandIndex])
+    return NextResponse.json(testBands[bandIndex])
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      console.error('Validation error:', error.errors)
+      return NextResponse.json({
+        error: 'Invalid data',
+        details: error.errors,
+        receivedData: body
+      }, { status: 400 })
+    }
     console.error('Error updating band:', error)
-    return NextResponse.json({ error: 'Failed to update band' }, { status: 500 })
+    return NextResponse.json({ 
+      error: 'Failed to update band', 
+      details: error instanceof Error ? error.message : String(error) 
+    }, { status: 500 })
   }
 }
 
-export async function DELETE(
+export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  try {
-    await prisma.priceBand.delete({
-      where: { id: params.id },
-    })
-    
-    return NextResponse.json({ message: 'Band deleted successfully' })
-    
-  } catch (error) {
-    console.error('Error deleting band:', error)
-    return NextResponse.json({ error: 'Failed to delete band' }, { status: 500 })
+  const bandId = params.id
+  const band = testBands.find(band => band.id === bandId)
+  
+  if (!band) {
+    return NextResponse.json({ error: 'Band not found' }, { status: 404 })
   }
+  
+  return NextResponse.json(band)
 }
