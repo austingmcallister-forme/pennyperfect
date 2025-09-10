@@ -46,8 +46,11 @@ export default function DashboardPage() {
         
         if (bandsResponse.ok) {
           const bandsData = await bandsResponse.json()
-          console.log('Fetched bands for dashboard:', bandsData)
+          console.log('Dashboard: Fetched bands for dashboard:', bandsData)
+          console.log('Dashboard: Bands count:', bandsData.length)
           bandsCount = bandsData.length
+        } else {
+          console.error('Dashboard: Failed to fetch bands:', bandsResponse.status, await bandsResponse.text())
         }
         
         if (experimentsResponse.ok) {

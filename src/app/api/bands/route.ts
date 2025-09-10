@@ -2,7 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 // Temporary in-memory storage for testing
-let testBands: any[] = []
+let testBands: any[] = [
+  {
+    id: 'band-test-1',
+    shopId: 'test-shop-id',
+    name: 'Test Band',
+    minCents: 20000,
+    maxCents: 30000,
+    allowedEndings: [99, 95, 90],
+    floorCents: 1500,
+    excludeCollections: [],
+    excludeSkus: [],
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  }
+]
 let testShopId = 'test-shop-id'
 
 const createBandSchema = z.object({
@@ -16,6 +30,8 @@ const createBandSchema = z.object({
 })
 
 export async function GET(request: NextRequest) {
+  console.log('GET /api/bands called, returning', testBands.length, 'bands')
+  console.log('Bands data:', JSON.stringify(testBands, null, 2))
   // For testing, just return the in-memory bands
   return NextResponse.json(testBands)
 }
