@@ -1,4 +1,6 @@
-import { Suspense } from 'react'
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { 
   Plus, 
@@ -14,7 +16,60 @@ import {
   AlertCircle
 } from 'lucide-react'
 
+interface DashboardStats {
+  activeExperiments: number
+  priceBands: number
+  revenueImpact: number
+  productsTracked: number
+}
+
 export default function DashboardPage() {
+  const [stats, setStats] = useState<DashboardStats>({
+    activeExperiments: 0,
+    priceBands: 0,
+    revenueImpact: 0,
+    productsTracked: 0
+  })
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        // Fetch bands and experiments data
+        const [bandsResponse, experimentsResponse] = await Promise.all([
+          fetch('/api/bands'),
+          fetch('/api/experiments')
+        ])
+        
+        let bandsCount = 0
+        let experimentsCount = 0
+        
+        if (bandsResponse.ok) {
+          const bandsData = await bandsResponse.json()
+          console.log('Fetched bands for dashboard:', bandsData)
+          bandsCount = bandsData.length
+        }
+        
+        if (experimentsResponse.ok) {
+          const experimentsData = await experimentsResponse.json()
+          experimentsCount = experimentsData.filter((exp: any) => exp.status === 'running').length
+        }
+        
+        setStats({
+          activeExperiments: experimentsCount,
+          priceBands: bandsCount,
+          revenueImpact: 0, // TODO: Calculate from experiment results
+          productsTracked: 0 // TODO: Calculate from bands and experiments
+        })
+      } catch (error) {
+        console.error('Error fetching dashboard stats:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchStats()
+  }, [])
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Header */}
@@ -112,7 +167,13 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Active Experiments</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">0</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">
+                  {loading ? (
+                    <div className="animate-pulse bg-gray-200 h-8 w-8 rounded"></div>
+                  ) : (
+                    stats.activeExperiments
+                  )}
+                </p>
                 <p className="text-xs text-gray-500 mt-1">Running tests</p>
               </div>
               <div className="p-3 bg-blue-100 rounded-lg">
@@ -125,7 +186,13 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Price Bands</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">0</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">
+                  {loading ? (
+                    <div className="animate-pulse bg-gray-200 h-8 w-8 rounded"></div>
+                  ) : (
+                    stats.priceBands
+                  )}
+                </p>
                 <p className="text-xs text-gray-500 mt-1">Configured ranges</p>
               </div>
               <div className="p-3 bg-green-100 rounded-lg">
@@ -138,7 +205,13 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Revenue Impact</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">+0%</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">
+                  {loading ? (
+                    <div className="animate-pulse bg-gray-200 h-8 w-12 rounded"></div>
+                  ) : (
+                    `+${stats.revenueImpact}%`
+                  )}
+                </p>
                 <p className="text-xs text-gray-500 mt-1">vs baseline</p>
               </div>
               <div className="p-3 bg-emerald-100 rounded-lg">
@@ -151,7 +224,13 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">Products Tracked</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">0</p>
+                <p className="text-3xl font-bold text-gray-900 mt-1">
+                  {loading ? (
+                    <div className="animate-pulse bg-gray-200 h-8 w-8 rounded"></div>
+                  ) : (
+                    stats.productsTracked
+                  )}
+                </p>
                 <p className="text-xs text-gray-500 mt-1">In experiments</p>
               </div>
               <div className="p-3 bg-purple-100 rounded-lg">
