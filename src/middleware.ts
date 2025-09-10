@@ -62,7 +62,9 @@ function handleApiRoute(request: NextRequest) {
   }
   
   // Skip bands and experiments routes in test mode (no shop parameter required)
-  if (request.nextUrl.pathname.startsWith('/api/bands') || request.nextUrl.pathname.startsWith('/api/experiments')) {
+  if (request.nextUrl.pathname.startsWith('/api/bands') || 
+      request.nextUrl.pathname.startsWith('/api/experiments') ||
+      request.nextUrl.pathname.startsWith('/api/shopify/')) {
     return NextResponse.next()
   }
   
