@@ -54,7 +54,9 @@ export default function BandDetailPage() {
   }, [params.id])
 
   const handleEditBand = () => {
-    router.push(`/bands/${band.id}/edit`)
+    if (band) {
+      router.push(`/bands/${band.id}/edit`)
+    }
   }
 
   const handleStartExperiment = async () => {
