@@ -32,7 +32,7 @@ export default function NewBandPage() {
         },
         body: JSON.stringify({
           ...formData,
-          floorCents: formData.floorCents ? parseInt(formData.floorCents) : undefined,
+          floorCents: formData.floorCents && formData.floorCents !== '' ? parseInt(formData.floorCents) : undefined,
         }),
       })
 
