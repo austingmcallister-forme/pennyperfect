@@ -200,9 +200,13 @@ export default function NewBandPage() {
                     </button>
                   ))}
                 </div>
-                <p className="mt-1 text-sm text-gray-500">
-                  Select which price endings to test
-                </p>
+                <div className="mt-2 p-3 bg-green-50 rounded-md">
+                  <p className="text-sm text-green-800 font-medium mb-1">🎯 What This Tests</p>
+                  <p className="text-sm text-green-700">
+                    PennyPerfect will automatically cycle through these endings (e.g., $19.99 → $19.95 → $19.90) 
+                    to find which converts best for your customers.
+                  </p>
+                </div>
               </div>
 
               <div>
@@ -219,15 +223,25 @@ export default function NewBandPage() {
                   className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                   placeholder="1500"
                 />
-                <p className="mt-1 text-sm text-gray-500">
-                  Minimum price to respect (${(parseInt(formData.floorCents) / 100).toFixed(2) || '0.00'})
-                </p>
+                <div className="mt-2 p-3 bg-blue-50 rounded-md">
+                  <p className="text-sm text-blue-800 font-medium mb-1">🛡️ Price Protection</p>
+                  <p className="text-sm text-blue-700">
+                    Prevents prices from going below ${(parseInt(formData.floorCents) / 100).toFixed(2) || 'your minimum'}. 
+                    Perfect for protecting profit margins or respecting MAP policies.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
           <div className="bg-white shadow rounded-lg p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Exclusions</h2>
+            <div className="mb-4 p-3 bg-yellow-50 rounded-md">
+              <p className="text-sm text-yellow-800 font-medium mb-1">⚠️ Skip These Products</p>
+              <p className="text-sm text-yellow-700">
+                Add collections or SKUs that should never be included in price experiments (e.g., clearance items, loss leaders).
+              </p>
+            </div>
             
             <div className="space-y-4">
               <div>
