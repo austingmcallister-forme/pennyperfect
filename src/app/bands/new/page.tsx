@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, Plus, X, Home } from 'lucide-react'
+import { ArrowLeft, Save, Plus, X, Home, Search, Check } from 'lucide-react'
 
 export default function NewBandPage() {
   const router = useRouter()
@@ -19,6 +19,62 @@ export default function NewBandPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [newCollection, setNewCollection] = useState('')
   const [newSku, setNewSku] = useState('')
+  
+  // New state for collections and products data
+  const [collections, setCollections] = useState<any[]>([])
+  const [products, setProducts] = useState<any[]>([])
+  const [loadingCollections, setLoadingCollections] = useState(false)
+  const [loadingProducts, setLoadingProducts] = useState(false)
+  const [showCollectionDropdown, setShowCollectionDropdown] = useState(false)
+  const [showProductDropdown, setShowProductDropdown] = useState(false)
+  const [collectionSearch, setCollectionSearch] = useState('')
+  const [productSearch, setProductSearch] = useState('')
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      if (!target.closest('.dropdown-container')) {
+        setShowCollectionDropdown(false)
+        setShowProductDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Fetch collections and products on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoadingCollections(true)
+        setLoadingProducts(true)
+        
+        const [collectionsResponse, productsResponse] = await Promise.all([
+          fetch('/api/shopify/collections'),
+          fetch('/api/shopify/products')
+        ])
+        
+        if (collectionsResponse.ok) {
+          const collectionsData = await collectionsResponse.json()
+          setCollections(collectionsData)
+        }
+        
+        if (productsResponse.ok) {
+          const productsData = await productsResponse.json()
+          setProducts(productsData)
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error)
+      } finally {
+        setLoadingCollections(false)
+        setLoadingProducts(false)
+      }
+    }
+    
+    fetchData()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -72,15 +128,16 @@ export default function NewBandPage() {
     }))
   }
 
-  const addCollection = () => {
-    console.log('Adding collection:', newCollection)
-    if (newCollection.trim()) {
+  const addCollection = (collectionHandle: string) => {
+    console.log('Adding collection:', collectionHandle)
+    if (collectionHandle && !formData.excludeCollections.includes(collectionHandle)) {
       setFormData(prev => ({
         ...prev,
-        excludeCollections: [...prev.excludeCollections, newCollection.trim()],
+        excludeCollections: [...prev.excludeCollections, collectionHandle],
       }))
-      setNewCollection('')
     }
+    setShowCollectionDropdown(false)
+    setCollectionSearch('')
   }
 
   const removeCollection = (index: number) => {
@@ -90,15 +147,16 @@ export default function NewBandPage() {
     }))
   }
 
-  const addSku = () => {
-    console.log('Adding SKU:', newSku)
-    if (newSku.trim()) {
+  const addSku = (sku: string) => {
+    console.log('Adding SKU:', sku)
+    if (sku && !formData.excludeSkus.includes(sku)) {
       setFormData(prev => ({
         ...prev,
-        excludeSkus: [...prev.excludeSkus, newSku.trim()],
+        excludeSkus: [...prev.excludeSkus, sku],
       }))
-      setNewSku('')
     }
+    setShowProductDropdown(false)
+    setProductSearch('')
   }
 
   const removeSku = (index: number) => {
@@ -276,43 +334,85 @@ export default function NewBandPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Exclude Collections
                 </label>
-                <div className="flex space-x-2 mb-2">
-                  <input
-                    type="text"
-                    value={newCollection}
-                    onChange={(e) => setNewCollection(e.target.value)}
-                    className="flex-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Collection handle"
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addCollection())}
-                  />
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      console.log('Collection button clicked')
-                      addCollection()
-                    }}
-                    className="px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {formData.excludeCollections.map((collection, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
+                <div className="relative dropdown-container">
+                  <div className="flex space-x-2 mb-2">
+                    <div className="flex-1 relative">
+                      <input
+                        type="text"
+                        value={collectionSearch}
+                        onChange={(e) => {
+                          setCollectionSearch(e.target.value)
+                          setShowCollectionDropdown(true)
+                        }}
+                        onFocus={() => setShowCollectionDropdown(true)}
+                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="Search collections..."
+                      />
+                      {showCollectionDropdown && (
+                        <div className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                          {loadingCollections ? (
+                            <div className="px-3 py-2 text-gray-500">Loading collections...</div>
+                          ) : (
+                            collections
+                              .filter(collection => 
+                                collection.title.toLowerCase().includes(collectionSearch.toLowerCase()) ||
+                                collection.handle.toLowerCase().includes(collectionSearch.toLowerCase())
+                              )
+                              .filter(collection => !formData.excludeCollections.includes(collection.handle))
+                              .map((collection) => (
+                                <div
+                                  key={collection.id}
+                                  className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
+                                  onClick={() => addCollection(collection.handle)}
+                                >
+                                  <div className="flex items-center">
+                                    <span className="font-normal block truncate">
+                                      {collection.title}
+                                    </span>
+                                    <span className="ml-2 text-gray-500 text-sm">
+                                      ({collection.handle})
+                                    </span>
+                                  </div>
+                                </div>
+                              ))
+                          )}
+                          {collections.filter(collection => 
+                            collection.title.toLowerCase().includes(collectionSearch.toLowerCase()) ||
+                            collection.handle.toLowerCase().includes(collectionSearch.toLowerCase())
+                          ).filter(collection => !formData.excludeCollections.includes(collection.handle)).length === 0 && !loadingCollections && (
+                            <div className="px-3 py-2 text-gray-500">No collections found</div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowCollectionDropdown(!showCollectionDropdown)}
+                      className="px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      {collection}
-                      <button
-                        type="button"
-                        onClick={() => removeCollection(index)}
-                        className="ml-1 text-red-600 hover:text-red-800"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
-                  ))}
+                      <Search className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {formData.excludeCollections.map((collectionHandle, index) => {
+                      const collection = collections.find(c => c.handle === collectionHandle)
+                      return (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
+                        >
+                          {collection ? collection.title : collectionHandle}
+                          <button
+                            type="button"
+                            onClick={() => removeCollection(index)}
+                            className="ml-1 text-red-600 hover:text-red-800"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </span>
+                      )
+                    })}
+                  </div>
                 </div>
               </div>
 
@@ -320,43 +420,87 @@ export default function NewBandPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Exclude SKUs
                 </label>
-                <div className="flex space-x-2 mb-2">
-                  <input
-                    type="text"
-                    value={newSku}
-                    onChange={(e) => setNewSku(e.target.value)}
-                    className="flex-1 border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="SKU"
-                    onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addSku())}
-                  />
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      console.log('SKU button clicked')
-                      addSku()
-                    }}
-                    className="px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  {formData.excludeSkus.map((sku, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
+                <div className="relative dropdown-container">
+                  <div className="flex space-x-2 mb-2">
+                    <div className="flex-1 relative">
+                      <input
+                        type="text"
+                        value={productSearch}
+                        onChange={(e) => {
+                          setProductSearch(e.target.value)
+                          setShowProductDropdown(true)
+                        }}
+                        onFocus={() => setShowProductDropdown(true)}
+                        className="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                        placeholder="Search products by name or SKU..."
+                      />
+                      {showProductDropdown && (
+                        <div className="absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm">
+                          {loadingProducts ? (
+                            <div className="px-3 py-2 text-gray-500">Loading products...</div>
+                          ) : (
+                            products
+                              .filter(product => 
+                                product.title.toLowerCase().includes(productSearch.toLowerCase()) ||
+                                product.sku.toLowerCase().includes(productSearch.toLowerCase())
+                              )
+                              .filter(product => !formData.excludeSkus.includes(product.sku))
+                              .map((product) => (
+                                <div
+                                  key={product.id}
+                                  className="cursor-pointer select-none relative py-2 pl-3 pr-9 hover:bg-blue-50"
+                                  onClick={() => addSku(product.sku)}
+                                >
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <span className="font-normal block truncate">
+                                        {product.title}
+                                      </span>
+                                      <span className="text-gray-500 text-sm">
+                                        SKU: {product.sku}
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))
+                          )}
+                          {products.filter(product => 
+                            product.title.toLowerCase().includes(productSearch.toLowerCase()) ||
+                            product.sku.toLowerCase().includes(productSearch.toLowerCase())
+                          ).filter(product => !formData.excludeSkus.includes(product.sku)).length === 0 && !loadingProducts && (
+                            <div className="px-3 py-2 text-gray-500">No products found</div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowProductDropdown(!showProductDropdown)}
+                      className="px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                      {sku}
-                      <button
-                        type="button"
-                        onClick={() => removeSku(index)}
-                        className="ml-1 text-red-600 hover:text-red-800"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </span>
-                  ))}
+                      <Search className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {formData.excludeSkus.map((sku, index) => {
+                      const product = products.find(p => p.sku === sku)
+                      return (
+                        <span
+                          key={index}
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
+                        >
+                          {product ? `${product.title} (${sku})` : sku}
+                          <button
+                            type="button"
+                            onClick={() => removeSku(index)}
+                            className="ml-1 text-red-600 hover:text-red-800"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </span>
+                      )
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
