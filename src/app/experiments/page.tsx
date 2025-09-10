@@ -86,12 +86,9 @@ export default function ExperimentsPage() {
   }
 
   const handlePauseResume = async (experimentId: string, currentStatus: string) => {
-    console.log('handlePauseResume called:', { experimentId, currentStatus })
     const newStatus = currentStatus === 'running' ? 'paused' : 'running'
-    console.log('New status will be:', newStatus)
     
     try {
-      console.log('Making API call to:', `/api/experiments/${experimentId}`)
       const response = await fetch(`/api/experiments/${experimentId}`, {
         method: 'PUT',
         headers: {
@@ -100,11 +97,7 @@ export default function ExperimentsPage() {
         body: JSON.stringify({ status: newStatus }),
       })
 
-      console.log('API response status:', response.status)
       if (response.ok) {
-        const updatedExperiment = await response.json()
-        console.log('Updated experiment from API:', updatedExperiment)
-        
         // Update the local state
         setExperiments(prev => 
           prev.map(exp => 
@@ -113,10 +106,9 @@ export default function ExperimentsPage() {
               : exp
           )
         )
-        console.log(`Experiment ${experimentId} ${newStatus} - UI updated`)
+        console.log(`Experiment ${experimentId} ${newStatus}`)
       } else {
-        const errorText = await response.text()
-        console.error('Failed to update experiment status:', response.status, errorText)
+        console.error('Failed to update experiment status')
       }
     } catch (error) {
       console.error('Error updating experiment:', error)
@@ -159,21 +151,13 @@ export default function ExperimentsPage() {
                 Monitor your switchback price ending tests
               </p>
             </div>
-            <div className="flex space-x-3">
-              <button 
-                onClick={() => alert('TEST BUTTON WORKS!')}
-                className="px-4 py-2 bg-red-500 text-white rounded"
-              >
-                TEST BUTTON
-              </button>
-              <Link
-                href="/experiments/new"
-                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-200"
-              >
-                <Plus className="h-5 w-5 mr-2" />
-                New Experiment
-              </Link>
-            </div>
+            <Link
+              href="/experiments/new"
+              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-200"
+            >
+              <Plus className="h-5 w-5 mr-2" />
+              New Experiment
+            </Link>
           </div>
         </div>
 
@@ -233,13 +217,7 @@ export default function ExperimentsPage() {
                       <div className="flex space-x-2">
                         {experiment.status === 'running' ? (
                           <button 
-                            onClick={(e) => {
-                              e.preventDefault()
-                              e.stopPropagation()
-                              alert('Pause button clicked!')
-                              console.log('Pause button clicked for experiment:', experiment.id)
-                              handlePauseResume(experiment.id, experiment.status)
-                            }}
+                            onClick={() => handlePauseResume(experiment.id, experiment.status)}
                             className="inline-flex items-center px-3 py-2 border border-yellow-300 text-yellow-700 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors cursor-pointer"
                             title="Pause experiment"
                             type="button"
@@ -248,13 +226,7 @@ export default function ExperimentsPage() {
                           </button>
                         ) : (
                           <button 
-                            onClick={(e) => {
-                              e.preventDefault()
-                              e.stopPropagation()
-                              alert('Resume button clicked!')
-                              console.log('Resume button clicked for experiment:', experiment.id)
-                              handlePauseResume(experiment.id, experiment.status)
-                            }}
+                            onClick={() => handlePauseResume(experiment.id, experiment.status)}
                             className="inline-flex items-center px-3 py-2 border border-green-300 text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors cursor-pointer"
                             title="Resume experiment"
                             type="button"
