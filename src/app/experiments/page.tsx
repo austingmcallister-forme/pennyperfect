@@ -4,8 +4,28 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Plus, Play, Pause, TrendingUp, Clock, DollarSign, Home, BarChart3, Target, Zap } from 'lucide-react'
 
+interface ExperimentPeriod {
+  ending: number
+  sessions: number
+  orders: number
+  revenueCents: number
+}
+
+interface Experiment {
+  id: string
+  bandName: string
+  status: string
+  cadenceHours: number
+  revertThresholdRpv: number
+  minSessions: number
+  minCycles: number
+  startedAt: string
+  endedAt?: string
+  periods: ExperimentPeriod[]
+}
+
 export default function ExperimentsPage() {
-  const [experiments, setExperiments] = useState<any[]>([])
+  const [experiments, setExperiments] = useState<Experiment[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
