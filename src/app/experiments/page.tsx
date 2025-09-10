@@ -86,9 +86,12 @@ export default function ExperimentsPage() {
   }
 
   const handlePauseResume = async (experimentId: string, currentStatus: string) => {
+    console.log('handlePauseResume called:', { experimentId, currentStatus })
     const newStatus = currentStatus === 'running' ? 'paused' : 'running'
+    console.log('New status will be:', newStatus)
     
     try {
+      console.log('Making API call to:', `/api/experiments/${experimentId}`)
       const response = await fetch(`/api/experiments/${experimentId}`, {
         method: 'PUT',
         headers: {
@@ -97,7 +100,11 @@ export default function ExperimentsPage() {
         body: JSON.stringify({ status: newStatus }),
       })
 
+      console.log('API response status:', response.status)
       if (response.ok) {
+        const updatedExperiment = await response.json()
+        console.log('Updated experiment from API:', updatedExperiment)
+        
         // Update the local state
         setExperiments(prev => 
           prev.map(exp => 
@@ -106,9 +113,10 @@ export default function ExperimentsPage() {
               : exp
           )
         )
-        console.log(`Experiment ${experimentId} ${newStatus}`)
+        console.log(`Experiment ${experimentId} ${newStatus} - UI updated`)
       } else {
-        console.error('Failed to update experiment status')
+        const errorText = await response.text()
+        console.error('Failed to update experiment status:', response.status, errorText)
       }
     } catch (error) {
       console.error('Error updating experiment:', error)
@@ -217,7 +225,10 @@ export default function ExperimentsPage() {
                       <div className="flex space-x-2">
                         {experiment.status === 'running' ? (
                           <button 
-                            onClick={() => handlePauseResume(experiment.id, experiment.status)}
+                            onClick={() => {
+                              console.log('Pause button clicked for experiment:', experiment.id)
+                              handlePauseResume(experiment.id, experiment.status)
+                            }}
                             className="inline-flex items-center px-3 py-2 border border-yellow-300 text-yellow-700 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors"
                             title="Pause experiment"
                           >
@@ -225,7 +236,10 @@ export default function ExperimentsPage() {
                           </button>
                         ) : (
                           <button 
-                            onClick={() => handlePauseResume(experiment.id, experiment.status)}
+                            onClick={() => {
+                              console.log('Resume button clicked for experiment:', experiment.id)
+                              handlePauseResume(experiment.id, experiment.status)
+                            }}
                             className="inline-flex items-center px-3 py-2 border border-green-300 text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
                             title="Resume experiment"
                           >
