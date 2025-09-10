@@ -25,22 +25,28 @@ export default function NewBandPage() {
     setIsSubmitting(true)
 
     try {
+      const requestData = {
+        ...formData,
+        floorCents: formData.floorCents && formData.floorCents !== '' ? parseInt(formData.floorCents) : undefined,
+      }
+      
+      console.log('Sending data:', JSON.stringify(requestData, null, 2))
+      
       const response = await fetch('/api/bands', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...formData,
-          floorCents: formData.floorCents && formData.floorCents !== '' ? parseInt(formData.floorCents) : undefined,
-        }),
+        body: JSON.stringify(requestData),
       })
 
       if (response.ok) {
         const band = await response.json()
         router.push(`/bands/${band.id}`)
       } else {
-        console.error('Failed to create band')
+        const errorData = await response.json()
+        console.error('Failed to create band:', errorData)
+        alert(`Failed to create band: ${JSON.stringify(errorData, null, 2)}`)
       }
     } catch (error) {
       console.error('Error creating band:', error)

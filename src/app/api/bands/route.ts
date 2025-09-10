@@ -43,10 +43,15 @@ export async function POST(request: NextRequest) {
     
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid data', details: error.errors }, { status: 400 })
+      console.error('Validation error:', error.errors)
+      return NextResponse.json({ 
+        error: 'Invalid data', 
+        details: error.errors,
+        receivedData: body 
+      }, { status: 400 })
     }
     
     console.error('Error creating band:', error)
-    return NextResponse.json({ error: 'Failed to create band' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to create band', details: error.message }, { status: 500 })
   }
 }
