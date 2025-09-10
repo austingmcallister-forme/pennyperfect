@@ -1,9 +1,18 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, Save } from 'lucide-react'
+
+interface PriceBand {
+  id: string
+  name: string
+  minCents: number
+  maxCents: number
+  allowedEndings: number[]
+  floorCents?: number
+}
 
 export default function NewExperimentPage() {
   const router = useRouter()
@@ -15,12 +24,30 @@ export default function NewExperimentPage() {
     minCycles: 3,
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [bands, setBands] = useState<PriceBand[]>([])
+  const [loading, setLoading] = useState(true)
 
-  // Mock bands data - would come from API
-  const bands = [
-    { id: '1', name: 'Mid-Range Products ($20-$50)', minCents: 2000, maxCents: 5000 },
-    { id: '2', name: 'Premium Products ($50-$100)', minCents: 5000, maxCents: 10000 },
-  ]
+  // Fetch bands from API
+  useEffect(() => {
+    const fetchBands = async () => {
+      try {
+        const response = await fetch('/api/bands')
+        if (response.ok) {
+          const bandsData = await response.json()
+          console.log('Fetched bands for experiment creator:', bandsData)
+          setBands(bandsData)
+        } else {
+          console.error('Failed to fetch bands:', response.status)
+        }
+      } catch (error) {
+        console.error('Error fetching bands:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchBands()
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -88,18 +115,26 @@ export default function NewExperimentPage() {
                   value={formData.bandId}
                   onChange={handleChange}
                   required
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  disabled={loading}
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm disabled:bg-gray-100"
                 >
-                  <option value="">Select a price band</option>
+                  <option value="">
+                    {loading ? 'Loading bands...' : 'Select a price band'}
+                  </option>
                   {bands.map((band) => (
                     <option key={band.id} value={band.id}>
-                      {band.name}
+                      {band.name} (${(band.minCents / 100).toFixed(2)} - ${(band.maxCents / 100).toFixed(2)})
                     </option>
                   ))}
                 </select>
                 <p className="mt-1 text-sm text-gray-500">
                   Choose which price range to test
                 </p>
+                {!loading && bands.length === 0 && (
+                  <p className="mt-2 text-sm text-amber-600">
+                    No price bands available. <Link href="/bands/new" className="text-blue-600 hover:text-blue-800 underline">Create one first</Link>.
+                  </p>
+                )}
               </div>
 
               <div>

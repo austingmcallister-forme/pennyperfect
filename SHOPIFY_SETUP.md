@@ -9,7 +9,7 @@
    - Choose "Create app manually"
    - App name: "PennyPerfect"
    - App URL: `https://pennyperfect-p4285b5o0-austins-projects-8ddb27c7.vercel.app`
-   - Allowed redirection URL: `https://pennyperfect-p4285b5o0-austins-projects-8ddb27c7.vercel.app/api/auth/shopify/callback`
+   - Allowed redirection URL: `des`
 
 4. **Get your credentials**:
    - API Key (Client ID)
