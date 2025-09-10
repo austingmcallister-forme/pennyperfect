@@ -58,11 +58,13 @@ export default function NewBandPage() {
         
         if (collectionsResponse.ok) {
           const collectionsData = await collectionsResponse.json()
+          console.log('Fetched collections:', collectionsData)
           setCollections(collectionsData)
         }
         
         if (productsResponse.ok) {
           const productsData = await productsResponse.json()
+          console.log('Fetched products:', productsData)
           setProducts(productsData)
         }
       } catch (error) {
@@ -355,6 +357,7 @@ export default function NewBandPage() {
                           ) : (
                             collections
                               .filter(collection => 
+                                collectionSearch === '' || 
                                 collection.title.toLowerCase().includes(collectionSearch.toLowerCase()) ||
                                 collection.handle.toLowerCase().includes(collectionSearch.toLowerCase())
                               )
@@ -377,6 +380,7 @@ export default function NewBandPage() {
                               ))
                           )}
                           {collections.filter(collection => 
+                            collectionSearch === '' || 
                             collection.title.toLowerCase().includes(collectionSearch.toLowerCase()) ||
                             collection.handle.toLowerCase().includes(collectionSearch.toLowerCase())
                           ).filter(collection => !formData.excludeCollections.includes(collection.handle)).length === 0 && !loadingCollections && (
@@ -441,6 +445,7 @@ export default function NewBandPage() {
                           ) : (
                             products
                               .filter(product => 
+                                productSearch === '' ||
                                 product.title.toLowerCase().includes(productSearch.toLowerCase()) ||
                                 product.sku.toLowerCase().includes(productSearch.toLowerCase())
                               )
@@ -465,6 +470,7 @@ export default function NewBandPage() {
                               ))
                           )}
                           {products.filter(product => 
+                            productSearch === '' ||
                             product.title.toLowerCase().includes(productSearch.toLowerCase()) ||
                             product.sku.toLowerCase().includes(productSearch.toLowerCase())
                           ).filter(product => !formData.excludeSkus.includes(product.sku)).length === 0 && !loadingProducts && (
