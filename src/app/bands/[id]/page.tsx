@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Edit, Trash2, Play, Pause, BarChart3, Home } from 'lucide-react'
+import { ArrowLeft, Edit, Trash2, Play, Pause, BarChart3, Home, Zap, CheckCircle, AlertCircle } from 'lucide-react'
 
 interface PriceBand {
   id: string
@@ -24,6 +24,9 @@ export default function BandDetailPage() {
   const [band, setBand] = useState<PriceBand | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [isCreatingExperiment, setIsCreatingExperiment] = useState(false)
+  const [experimentSuccess, setExperimentSuccess] = useState<string | null>(null)
+  const [experimentError, setExperimentError] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchBand = async () => {
@@ -49,6 +52,52 @@ export default function BandDetailPage() {
 
     fetchBand()
   }, [params.id])
+
+  const handleStartExperiment = async () => {
+    if (!band) return
+    
+    setIsCreatingExperiment(true)
+    setExperimentError(null)
+    setExperimentSuccess(null)
+    
+    try {
+      const experimentData = {
+        bandId: band.id,
+        cadenceHours: 24, // Default 24-hour cadence
+        revertThresholdRpv: 0.01, // Default 1% improvement threshold
+        minSessions: 500, // Default minimum sessions
+        minCycles: 3, // Default minimum cycles
+      }
+      
+      console.log('Creating experiment with data:', experimentData)
+      
+      const response = await fetch('/api/experiments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(experimentData),
+      })
+      
+      if (response.ok) {
+        const experiment = await response.json()
+        setExperimentSuccess(`Experiment "${experiment.id}" started successfully!`)
+        // Redirect to experiments page after a short delay
+        setTimeout(() => {
+          router.push('/experiments')
+        }, 2000)
+      } else {
+        const errorData = await response.json()
+        console.error('Failed to create experiment:', errorData)
+        setExperimentError(`Failed to create experiment: ${JSON.stringify(errorData, null, 2)}`)
+      }
+    } catch (error) {
+      console.error('Error creating experiment:', error)
+      setExperimentError('Error creating experiment. Please try again.')
+    } finally {
+      setIsCreatingExperiment(false)
+    }
+  }
 
   const formatPrice = (cents: number) => {
     return `$${(cents / 100).toFixed(2)}`
@@ -112,6 +161,21 @@ export default function BandDetailPage() {
           </div>
         </div>
 
+        {/* Success/Error Messages */}
+        {experimentSuccess && (
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center">
+            <CheckCircle className="h-5 w-5 text-green-600 mr-3" />
+            <p className="text-green-800 font-medium">{experimentSuccess}</p>
+          </div>
+        )}
+        
+        {experimentError && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
+            <AlertCircle className="h-5 w-5 text-red-600 mr-3" />
+            <p className="text-red-800 font-medium">{experimentError}</p>
+          </div>
+        )}
+
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -126,9 +190,26 @@ export default function BandDetailPage() {
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </button>
-              <button className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                <Play className="h-4 w-4 mr-2" />
-                Start Experiment
+              <button 
+                onClick={handleStartExperiment}
+                disabled={isCreatingExperiment}
+                className={`inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md ${
+                  isCreatingExperiment 
+                    ? 'bg-gray-400 cursor-not-allowed' 
+                    : 'bg-blue-600 hover:bg-blue-700'
+                } text-white`}
+              >
+                {isCreatingExperiment ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Starting...
+                  </>
+                ) : (
+                  <>
+                    <Zap className="h-4 w-4 mr-2" />
+                    Start Experiment
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -237,9 +318,26 @@ export default function BandDetailPage() {
             <div className="bg-white shadow rounded-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                <button className="w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
-                  <Play className="h-4 w-4 mr-2" />
-                  Start Experiment
+                <button 
+                  onClick={handleStartExperiment}
+                  disabled={isCreatingExperiment}
+                  className={`w-full inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md ${
+                    isCreatingExperiment 
+                      ? 'bg-gray-400 cursor-not-allowed' 
+                      : 'bg-blue-600 hover:bg-blue-700'
+                  } text-white`}
+                >
+                  {isCreatingExperiment ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Starting...
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="h-4 w-4 mr-2" />
+                      Start Experiment
+                    </>
+                  )}
                 </button>
                 <button className="w-full inline-flex items-center justify-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                   <BarChart3 className="h-4 w-4 mr-2" />

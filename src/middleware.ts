@@ -61,8 +61,8 @@ function handleApiRoute(request: NextRequest) {
     return NextResponse.next()
   }
   
-  // Skip bands route in test mode (no shop parameter required)
-  if (request.nextUrl.pathname.startsWith('/api/bands')) {
+  // Skip bands and experiments routes in test mode (no shop parameter required)
+  if (request.nextUrl.pathname.startsWith('/api/bands') || request.nextUrl.pathname.startsWith('/api/experiments')) {
     return NextResponse.next()
   }
   

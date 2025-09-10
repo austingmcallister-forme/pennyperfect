@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
+
+// Temporary in-memory storage for testing
+let testExperiments: any[] = []
+let testShopId = 'test-shop-id'
 
 const createExperimentSchema = z.object({
   bandId: z.string(),
@@ -11,91 +14,50 @@ const createExperimentSchema = z.object({
 })
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const shopDomain = searchParams.get('shop')
-  
-  if (!shopDomain) {
-    return NextResponse.json({ error: 'Shop parameter is required' }, { status: 400 })
-  }
-  
-  try {
-    const shop = await prisma.shop.findUnique({
-      where: { domain: shopDomain },
-      include: {
-        experiments: {
-          include: {
-            band: true,
-            periods: {
-              orderBy: { startedAt: 'desc' },
-            },
-          },
-          orderBy: { startedAt: 'desc' },
-        },
-      },
-    })
-    
-    if (!shop) {
-      return NextResponse.json({ error: 'Shop not found' }, { status: 404 })
-    }
-    
-    return NextResponse.json(shop.experiments)
-    
-  } catch (error) {
-    console.error('Error fetching experiments:', error)
-    return NextResponse.json({ error: 'Failed to fetch experiments' }, { status: 500 })
-  }
+  // For testing, just return the in-memory experiments
+  return NextResponse.json(testExperiments)
 }
 
 export async function POST(request: NextRequest) {
-  const { searchParams } = new URL(request.url)
-  const shopDomain = searchParams.get('shop')
-  
-  if (!shopDomain) {
-    return NextResponse.json({ error: 'Shop parameter is required' }, { status: 400 })
-  }
-  
+  let body: any
   try {
-    const shop = await prisma.shop.findUnique({
-      where: { domain: shopDomain },
-    })
+    body = await request.json()
+    console.log('Received experiment data:', JSON.stringify(body, null, 2))
     
-    if (!shop) {
-      return NextResponse.json({ error: 'Shop not found' }, { status: 404 })
-    }
-    
-    const body = await request.json()
     const validatedData = createExperimentSchema.parse(body)
     
-    // Verify band belongs to shop
-    const band = await prisma.priceBand.findFirst({
-      where: {
-        id: validatedData.bandId,
-        shopId: shop.id,
-      },
-    })
-    
-    if (!band) {
-      return NextResponse.json({ error: 'Band not found' }, { status: 404 })
+    // Create a new experiment with a unique ID
+    const newExperiment = {
+      id: `exp-${Date.now()}`,
+      shopId: testShopId,
+      bandId: validatedData.bandId,
+      cadenceHours: validatedData.cadenceHours,
+      revertThresholdRpv: validatedData.revertThresholdRpv,
+      minSessions: validatedData.minSessions,
+      minCycles: validatedData.minCycles,
+      status: 'running',
+      startedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      periods: [],
     }
     
-    const experiment = await prisma.experiment.create({
-      data: {
-        shopId: shop.id,
-        ...validatedData,
-      },
-      include: {
-        band: true,
-      },
-    })
+    // Add to in-memory storage
+    testExperiments.push(newExperiment)
     
-    return NextResponse.json(experiment)
+    return NextResponse.json(newExperiment)
     
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json({ error: 'Invalid data', details: error.errors }, { status: 400 })
+      console.error('Validation error:', error.errors)
+      return NextResponse.json({ 
+        error: 'Invalid data', 
+        details: error.errors,
+        receivedData: body 
+      }, { status: 400 })
     }
     
     console.error('Error creating experiment:', error)
-    return NextResponse.json({ error: 'Failed to create experiment' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to create experiment', details: error instanceof Error ? error.message : String(error) }, { status: 500 })
   }
 }
