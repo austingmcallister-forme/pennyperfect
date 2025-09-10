@@ -159,13 +159,21 @@ export default function ExperimentsPage() {
                 Monitor your switchback price ending tests
               </p>
             </div>
-            <Link
-              href="/experiments/new"
-              className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              <Plus className="h-5 w-5 mr-2" />
-              New Experiment
-            </Link>
+            <div className="flex space-x-3">
+              <button 
+                onClick={() => alert('TEST BUTTON WORKS!')}
+                className="px-4 py-2 bg-red-500 text-white rounded"
+              >
+                TEST BUTTON
+              </button>
+              <Link
+                href="/experiments/new"
+                className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                <Plus className="h-5 w-5 mr-2" />
+                New Experiment
+              </Link>
+            </div>
           </div>
         </div>
 
