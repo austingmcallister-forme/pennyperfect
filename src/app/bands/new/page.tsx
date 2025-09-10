@@ -73,6 +73,7 @@ export default function NewBandPage() {
   }
 
   const addCollection = () => {
+    console.log('Adding collection:', newCollection)
     if (newCollection.trim()) {
       setFormData(prev => ({
         ...prev,
@@ -90,6 +91,7 @@ export default function NewBandPage() {
   }
 
   const addSku = () => {
+    console.log('Adding SKU:', newSku)
     if (newSku.trim()) {
       setFormData(prev => ({
         ...prev,
@@ -105,6 +107,11 @@ export default function NewBandPage() {
       excludeSkus: prev.excludeSkus.filter((_, i) => i !== index),
     }))
   }
+
+  // Debug logging
+  console.log('Current form data:', formData)
+  console.log('New collection:', newCollection)
+  console.log('New SKU:', newSku)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -280,8 +287,12 @@ export default function NewBandPage() {
                   />
                   <button
                     type="button"
-                    onClick={addCollection}
-                    className="px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      console.log('Collection button clicked')
+                      addCollection()
+                    }}
+                    className="px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
@@ -320,8 +331,12 @@ export default function NewBandPage() {
                   />
                   <button
                     type="button"
-                    onClick={addSku}
-                    className="px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      console.log('SKU button clicked')
+                      addSku()
+                    }}
+                    className="px-3 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
