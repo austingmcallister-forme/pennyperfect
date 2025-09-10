@@ -53,6 +53,6 @@ export async function POST(request: NextRequest) {
     }
     
     console.error('Error creating band:', error)
-    return NextResponse.json({ error: 'Failed to create band', details: error.message }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to create band', details: error instanceof Error ? error.message : String(error) }, { status: 500 })
   }
 }
