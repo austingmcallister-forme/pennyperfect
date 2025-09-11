@@ -169,7 +169,7 @@ export default function DashboardPage() {
           <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-xl shadow-sm border border-blue-100 p-6 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-blue-700">🔥 ACTIVE EXPERIMENTS</p>
+                <p className="text-sm font-medium text-blue-700">Active Experiments</p>
                 <p className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mt-1">
                   {loading ? (
                     <div className="animate-pulse bg-gradient-to-r from-blue-200 to-purple-200 h-8 w-8 rounded"></div>
@@ -185,59 +185,59 @@ export default function DashboardPage() {
             </div>
           </div>
           
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div className="bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 rounded-xl shadow-sm border border-green-100 p-6 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Price Bands</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">
+                <p className="text-sm font-medium text-green-700">Price Bands</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-teal-600 bg-clip-text text-transparent mt-1">
                   {loading ? (
-                    <div className="animate-pulse bg-gray-200 h-8 w-8 rounded"></div>
+                    <div className="animate-pulse bg-gradient-to-r from-green-200 to-teal-200 h-8 w-8 rounded"></div>
                   ) : (
                     stats.priceBands
                   )}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">Configured ranges</p>
+                <p className="text-xs text-green-600 mt-1">Configured ranges</p>
               </div>
-              <div className="p-3 bg-green-100 rounded-lg">
-                <Settings className="h-6 w-6 text-green-600" />
+              <div className="p-3 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg shadow-lg">
+                <Settings className="h-6 w-6 text-white" />
               </div>
             </div>
           </div>
           
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div className="bg-gradient-to-br from-emerald-50 via-green-50 to-lime-50 rounded-xl shadow-sm border border-emerald-100 p-6 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Revenue Impact</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">
+                <p className="text-sm font-medium text-emerald-700">Revenue Impact</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-lime-600 bg-clip-text text-transparent mt-1">
                   {loading ? (
-                    <div className="animate-pulse bg-gray-200 h-8 w-12 rounded"></div>
+                    <div className="animate-pulse bg-gradient-to-r from-emerald-200 to-lime-200 h-8 w-12 rounded"></div>
                   ) : (
                     `+${stats.revenueImpact}%`
                   )}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">vs baseline</p>
+                <p className="text-xs text-emerald-600 mt-1">vs baseline</p>
               </div>
-              <div className="p-3 bg-emerald-100 rounded-lg">
-                <TrendingUp className="h-6 w-6 text-emerald-600" />
+              <div className="p-3 bg-gradient-to-br from-emerald-500 to-lime-600 rounded-lg shadow-lg">
+                <TrendingUp className="h-6 w-6 text-white" />
               </div>
             </div>
           </div>
           
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div className="bg-gradient-to-br from-purple-50 via-violet-50 to-indigo-50 rounded-xl shadow-sm border border-purple-100 p-6 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Products Tracked</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">
+                <p className="text-sm font-medium text-purple-700">Products Tracked</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mt-1">
                   {loading ? (
-                    <div className="animate-pulse bg-gray-200 h-8 w-8 rounded"></div>
+                    <div className="animate-pulse bg-gradient-to-r from-purple-200 to-indigo-200 h-8 w-8 rounded"></div>
                   ) : (
                     stats.productsTracked
                   )}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">In experiments</p>
+                <p className="text-xs text-purple-600 mt-1">In experiments</p>
               </div>
-              <div className="p-3 bg-purple-100 rounded-lg">
-                <DollarSign className="h-6 w-6 text-purple-600" />
+              <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg shadow-lg">
+                <DollarSign className="h-6 w-6 text-white" />
               </div>
             </div>
           </div>
