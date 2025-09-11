@@ -166,21 +166,21 @@ export default function DashboardPage() {
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+          <div className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 rounded-xl shadow-sm border border-blue-100 p-6 hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Active Experiments</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">
+                <p className="text-sm font-medium text-blue-700">Active Experiments</p>
+                <p className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mt-1">
                   {loading ? (
-                    <div className="animate-pulse bg-gray-200 h-8 w-8 rounded"></div>
+                    <div className="animate-pulse bg-gradient-to-r from-blue-200 to-purple-200 h-8 w-8 rounded"></div>
                   ) : (
                     stats.activeExperiments
                   )}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">Running tests</p>
+                <p className="text-xs text-blue-600 mt-1">Running tests</p>
               </div>
-              <div className="p-3 bg-blue-100 rounded-lg">
-                <Target className="h-6 w-6 text-blue-600" />
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg shadow-lg">
+                <Target className="h-6 w-6 text-white" />
               </div>
             </div>
           </div>
