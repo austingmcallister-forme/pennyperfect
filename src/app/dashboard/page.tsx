@@ -104,61 +104,66 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Getting Started Section */}
         <div className="mb-8">
-          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-8 text-white">
+          <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 rounded-3xl p-8 text-white shadow-2xl border border-blue-500/20">
             <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold mb-2">Get Started in 3 Simple Steps</h2>
-              <p className="text-blue-100 text-lg">
-                Set up your first price experiment and start optimizing revenue
+              <h2 className="text-4xl font-bold mb-3 bg-gradient-to-r from-white to-blue-100 bg-clip-text text-transparent">
+                Get Started in 3 Simple Steps
+              </h2>
+              <p className="text-blue-100 text-lg max-w-2xl mx-auto">
+                Set up your first price experiment and start optimizing revenue with AI-powered pricing
               </p>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-center hover:bg-white/15 transition-all duration-300 hover:scale-105 border border-white/20">
+                <div className="w-16 h-16 bg-gradient-to-br from-white/30 to-white/10 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <span className="text-2xl font-bold text-white">1</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Create Price Bands</h3>
-                <p className="text-blue-100 mb-4">
+                <h3 className="text-xl font-semibold mb-3">Create Price Bands</h3>
+                <p className="text-blue-100 mb-4 text-sm leading-relaxed">
                   Define price ranges and allowed endings (.99, .95, .90) for different product categories
                 </p>
                 <Link
                   href="/bands/new"
-                  className="inline-flex items-center px-4 py-2 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                  className="inline-flex items-center px-5 py-3 bg-white/20 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white/30 transition-all duration-300 border border-white/30 hover:border-white/50"
                 >
                   <Plus className="h-4 w-4 mr-2" />
                   Create Band
                 </Link>
               </div>
               
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-center hover:bg-white/15 transition-all duration-300 hover:scale-105 border border-white/20">
+                <div className="w-16 h-16 bg-gradient-to-br from-white/30 to-white/10 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <span className="text-2xl font-bold text-white">2</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Start Experiments</h3>
-                <p className="text-blue-100 mb-4">
+                <h3 className="text-xl font-semibold mb-3">Start Experiments</h3>
+                <p className="text-blue-100 mb-4 text-sm leading-relaxed">
                   Launch switchback tests that automatically cycle through price endings
                 </p>
                 <Link
                   href="/experiments/new"
-                  className="inline-flex items-center px-4 py-2 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
+                  className="inline-flex items-center px-5 py-3 bg-white/20 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white/30 transition-all duration-300 border border-white/30 hover:border-white/50"
                 >
                   <Zap className="h-4 w-4 mr-2" />
                   Start Test
                 </Link>
               </div>
               
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 text-center">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 text-center hover:bg-white/15 transition-all duration-300 hover:scale-105 border border-white/20">
+                <div className="w-16 h-16 bg-gradient-to-br from-white/30 to-white/10 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                   <span className="text-2xl font-bold text-white">3</span>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">Optimize Automatically</h3>
-                <p className="text-blue-100 mb-4">
+                <h3 className="text-xl font-semibold mb-3">Optimize Automatically</h3>
+                <p className="text-blue-100 mb-4 text-sm leading-relaxed">
                   Watch as the system promotes winning prices and reverts underperformers
                 </p>
-                <div className="inline-flex items-center px-4 py-2 bg-white/20 text-white font-semibold rounded-lg">
+                <Link
+                  href="/experiments"
+                  className="inline-flex items-center px-5 py-3 bg-white/20 backdrop-blur-sm text-white font-semibold rounded-xl hover:bg-white/30 transition-all duration-300 border border-white/30 hover:border-white/50"
+                >
                   <CheckCircle className="h-4 w-4 mr-2" />
                   Auto-Optimize
-                </div>
+                </Link>
               </div>
             </div>
           </div>
