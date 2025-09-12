@@ -85,13 +85,10 @@ export default function DashboardPage() {
                 <Image 
                   src="/PENNY PERFECT LOGO.png" 
                   alt="PennyPerfect Logo" 
-                  width={48}
-                  height={48}
+                  width={80}
+                  height={80}
                   className="mr-3"
                 />
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-                  Penny<span className="italic">P</span>erfect
-                </h1>
               </div>
               <p className="mt-1 text-sm text-gray-600">
                 Optimize your pricing with data-driven experiments
