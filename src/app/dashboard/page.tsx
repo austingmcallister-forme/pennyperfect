@@ -85,7 +85,7 @@ export default function DashboardPage() {
                 <Image 
                   src="/PENNY PERFECT LOGO alt.png" 
                   alt="PennyPerfect Logo" 
-                  width={120}
+                  width={400}
                   height={120}
                   className="mr-3"
                 />
