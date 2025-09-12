@@ -85,14 +85,19 @@ export default function DashboardPage() {
                 <Image 
                   src="/PENNY PERFECT LOGO.png" 
                   alt="PennyPerfect Logo" 
-                  width={80}
-                  height={80}
+                  width={120}
+                  height={120}
                   className="mr-3"
                 />
               </div>
-              <p className="mt-1 text-sm text-gray-600">
-                Optimize your pricing with data-driven experiments
-              </p>
+              <div className="mt-2">
+                <Image 
+                  src="/PENNY PERFECT TAGLINE.png" 
+                  alt="PennyPerfect Tagline" 
+                  width={300}
+                  height={40}
+                />
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 text-sm text-gray-600">
