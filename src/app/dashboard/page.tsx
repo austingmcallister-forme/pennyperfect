@@ -82,13 +82,9 @@ export default function DashboardPage() {
           <div className="flex justify-between items-center py-6">
             <div>
               <div className="flex items-center">
-                <Image 
-                  src="/logo.svg" 
-                  alt="PennyPerfect Logo" 
-                  width={48}
-                  height={48}
-                  className="mr-3"
-                />
+                <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mr-3 shadow-lg">
+                  <span className="text-white font-bold text-xl">P</span>
+                </div>
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
                   Penny<span className="italic">P</span>erfect
                 </h1>
