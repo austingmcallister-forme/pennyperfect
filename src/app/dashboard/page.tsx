@@ -83,7 +83,7 @@ export default function DashboardPage() {
             <div>
               <div className="flex items-center">
                 <Image 
-                  src="/PENNY PERFECT LOGO alt.png" 
+                  src="/PENNY PERFECT LOGO Gradient.png" 
                   alt="PennyPerfect Logo" 
                   width={400}
                   height={120}
